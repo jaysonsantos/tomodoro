@@ -1,12 +1,11 @@
-import sys
 from datetime import timedelta, datetime, date, time
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import Qt
 from smart_notify import notify
 
-import constants
-from timer import Timer
+from . import constants
+from .timer import Timer
 
 
 class TomodoroApp(QtGui.QWidget):
@@ -55,17 +54,17 @@ class TomodoroApp(QtGui.QWidget):
         pomodoro_button = QtGui.QPushButton('Pomodoro')
         pomodoro_button.setToolTip('Work work')
         pomodoro_button.resize(pomodoro_button.sizeHint())
-        pomodoro_button.clicked.connect(lambda: self.selected_time(constants.POMODORO))
+        pomodoro_button.clicked.connect(lambda: self.select_time(constants.POMODORO))
 
         short_break_button = QtGui.QPushButton('Short Break')
         short_break_button.setToolTip('05:00 minutes break')
         short_break_button.resize(short_break_button.sizeHint())
-        short_break_button.clicked.connect(lambda: self.selected_time(constants.SHORT_BREAK))
+        short_break_button.clicked.connect(lambda: self.select_time(constants.SHORT_BREAK))
 
         long_break_button = QtGui.QPushButton('Long Break')
         long_break_button.setToolTip('15:00 minutes break')
         long_break_button.resize(long_break_button.sizeHint())
-        long_break_button.clicked.connect(lambda: self.selected_time(time=constants.LONG_BREAK))
+        long_break_button.clicked.connect(lambda: self.select_time(constants.LONG_BREAK))
 
         start_button = QtGui.QPushButton('Start')
         start_button.setToolTip('Work the shit out')
@@ -116,8 +115,3 @@ class TomodoroApp(QtGui.QWidget):
             self.remaining = (datetime.combine(date.today(), self.remaining) - timedelta(seconds=1)).time()
             self.clock.setText(self.get_formatted_time(self.remaining))
             self.start()
-
-if __name__ == '__main__':
-    app = QtGui.QApplication(sys.argv)
-    TomodoroApp()
-    sys.exit(app.exec_())
