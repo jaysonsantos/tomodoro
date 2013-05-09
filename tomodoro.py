@@ -111,7 +111,7 @@ class TomodoroApp(QtGui.QWidget):
 
         if self.remaining <= time(0, 0, 0):
             notify('Wololo!', 'Time\'s up!', 'Tomodoro')
-            self.clock.setText('GORDOL!')
+            self.clock.setText('Time\'s up!')
         else:
             self.remaining = (datetime.combine(date.today(), self.remaining) - timedelta(seconds=1)).time()
             self.clock.setText(self.get_formatted_time(self.remaining))
@@ -119,5 +119,5 @@ class TomodoroApp(QtGui.QWidget):
 
 if __name__ == '__main__':
     app = QtGui.QApplication(sys.argv)
-    tomodoro = TomodoroApp()
+    TomodoroApp()
     sys.exit(app.exec_())
