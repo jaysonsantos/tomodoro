@@ -1,8 +1,11 @@
+import os
 from datetime import timedelta, datetime, date, time
+from gtk.gdk import pixbuf_new_from_file
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import Qt
-from smart_notify import notify
+from PyQt4.phonon import Phonon
+import pynotify
 
 from . import constants
 from .timer import Timer
@@ -18,6 +21,29 @@ class TomodoroApp(QtGui.QWidget):
         self.timer = Timer(self)
         self.init_widgets()
         self.init_ui()
+        self.image = pixbuf_new_from_file(os.path.join(os.path.dirname(__file__), 'icon.png'))
+
+        self.phonon_output = Phonon.AudioOutput(Phonon.MusicCategory)
+        self.phonon_media = Phonon.MediaObject()
+        Phonon.createPath(self.phonon_media, self.phonon_output)
+        self.phonon_media.setCurrentSource(
+            Phonon.MediaSource(
+                os.path.abspath(
+                    os.path.join(os.path.dirname(__file__), 'buzzer.wav')
+                    )
+                )
+            )
+
+        pynotify.init('Tomodoro')
+
+    def notify(self, title, message, urgency=pynotify.URGENCY_NORMAL):
+        n = pynotify.Notification(title, message, "dialog-info")
+        n.set_urgency(pynotify.URGENCY_NORMAL)
+        n.set_timeout(pynotify.EXPIRES_DEFAULT)
+        n.set_icon_from_pixbuf(self.image)
+        n.show()
+        self.phonon_media.play()
+        return True
 
     def get_formatted_time(self, time):
         return str(time)[3:]
@@ -109,7 +135,7 @@ class TomodoroApp(QtGui.QWidget):
             self.remaining = remaining
 
         if self.remaining <= time(0, 0, 0):
-            notify('Wololo!', 'Time\'s up!', 'Tomodoro')
+            self.notify('Wololo!', 'Time\'s up!')
             self.clock.setText('Time\'s up!')
         else:
             self.remaining = (datetime.combine(date.today(), self.remaining) - timedelta(seconds=1)).time()
